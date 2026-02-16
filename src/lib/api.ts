@@ -1,0 +1,198 @@
+import axios, { AxiosInstance, AxiosError } from "axios";
+import {
+  TokenResponse,
+  User,
+  Lead,
+  LeadUpdate,
+  LeadFilters,
+  PipelineRun,
+  TriggerPipelineRequest,
+  RoleConfig,
+  FitCriteria,
+  AppUser,
+} from "./types";
+
+// ─── Client Setup ─────────────────────────────────────────
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+const client: AxiosInstance = axios.create({
+  baseURL: BASE_URL,
+  headers: { "Content-Type": "application/json" },
+});
+
+// Inject auth token from localStorage on every request
+client.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("boaflow_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
+
+// Global error handler — 401 clears session and redirects to login
+client.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    if (error.response?.status === 401) {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("boaflow_token");
+        localStorage.removeItem("boaflow_user");
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  },
+);
+
+// ─── Auth ─────────────────────────────────────────────────
+
+export const authApi = {
+  login: async (email: string, password: string): Promise<TokenResponse> => {
+    const { data } = await client.post<TokenResponse>("/api/auth/login", {
+      email,
+      password,
+    });
+    return data;
+  },
+
+  me: async (token?: string): Promise<User> => {
+    const { data } = await client.get<User>("/api/auth/me", {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
+    return data;
+  },
+
+  changePassword: async (
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> => {
+    await client.post("/api/auth/change-password", {
+      current_password: currentPassword,
+      new_password: newPassword,
+    });
+  },
+};
+
+// ─── Leads ────────────────────────────────────────────────
+
+export const leadsApi = {
+  getLeads: async (
+    filters: LeadFilters = {},
+  ): Promise<{ data: Lead[]; total: number }> => {
+    const params = Object.fromEntries(
+      Object.entries(filters).filter(([, v]) => v !== undefined && v !== null),
+    );
+    const response = await client.get<Lead[]>("/api/leads/", { params });
+    const total = parseInt(response.headers["x-total-count"] ?? "0", 10);
+    return { data: response.data, total };
+  },
+  
+  getLead: async (id: number): Promise<Lead> => {
+    const { data } = await client.get<Lead>(`/api/leads/${id}`);
+    return data;
+  },
+
+  updateLead: async (id: number, update: LeadUpdate): Promise<Lead> => {
+    const { data } = await client.patch<Lead>(`/api/leads/${id}`, update);
+    return data;
+  },
+};
+
+// ─── Pipeline ─────────────────────────────────────────────
+
+export const pipelineApi = {
+  getRuns: async (): Promise<PipelineRun[]> => {
+    const { data } = await client.get<PipelineRun[]>("/api/pipeline/runs");
+    return data;
+  },
+
+  getRun: async (id: number): Promise<PipelineRun> => {
+    const { data } = await client.get<PipelineRun>(`/api/pipeline/runs/${id}`);
+    return data;
+  },
+
+  triggerRun: async (request: TriggerPipelineRequest): Promise<PipelineRun> => {
+    const { data } = await client.post<PipelineRun>(
+      "/api/pipeline/run",
+      request,
+    );
+    return data;
+  },
+};
+
+// ─── Settings ─────────────────────────────────────────────
+
+export const settingsApi = {
+  getRoles: async (): Promise<RoleConfig[]> => {
+    const { data } = await client.get<RoleConfig[]>("/api/settings/roles");
+    return data;
+  },
+
+  createRole: async (
+    payload: Omit<RoleConfig, "id" | "is_active" | "updated_at" | "updated_by">,
+  ): Promise<RoleConfig> => {
+    const { data } = await client.post<RoleConfig>(
+      "/api/settings/roles",
+      payload,
+    );
+    return data;
+  },
+
+  updateRole: async (
+    id: number,
+    payload: Partial<RoleConfig>,
+  ): Promise<RoleConfig> => {
+    const { data } = await client.patch<RoleConfig>(
+      `/api/settings/roles/${id}`,
+      payload,
+    );
+    return data;
+  },
+
+  deleteRole: async (id: number): Promise<void> => {
+    await client.delete(`/api/settings/roles/${id}`);
+  },
+
+  getCriteria: async (): Promise<FitCriteria[]> => {
+    const { data } = await client.get<FitCriteria[]>("/api/settings/criteria");
+    return data;
+  },
+
+  createCriteria: async (
+    payload: Omit<FitCriteria, "id" | "is_active">,
+  ): Promise<FitCriteria> => {
+    const { data } = await client.post<FitCriteria>(
+      "/api/settings/criteria",
+      payload,
+    );
+    return data;
+  },
+
+  deleteCriteria: async (id: number): Promise<void> => {
+    await client.delete(`/api/settings/criteria/${id}`);
+  },
+
+  getUsers: async (): Promise<AppUser[]> => {
+    const { data } = await client.get<AppUser[]>("/api/users/");
+    return data;
+  },
+
+  createUser: async (payload: {
+    email: string;
+    password: string;
+    full_name?: string;
+    role: string;
+  }): Promise<AppUser> => {
+    const { data } = await client.post<AppUser>("/api/users/", payload);
+    return data;
+  },
+
+  deactivateUser: async (id: number): Promise<void> => {
+    await client.delete(`/api/users/${id}`);
+  },
+};
+
+export default client;
