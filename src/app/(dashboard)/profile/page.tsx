@@ -9,6 +9,7 @@ import { Camera, Save, Key, EyeClosed, Eye } from "lucide-react";
 import { clsx } from "clsx";
 import { profileApi } from "@/lib/api";
 import { toast } from "sonner";
+import { authStorage } from "@/lib/auth";
 
 export default function ProfilePage() {
   const { user, setAuth } = useAuthStore();
@@ -30,23 +31,21 @@ export default function ProfilePage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-
-
   const updateProfileMutation = useMutation({
     mutationFn: profileApi.updateProfile,
     onSuccess: (updatedUser) => {
-       console.log("Backend returned:", updatedUser);
       if (user) {
+        const currentToken = authStorage.getToken(); // <-- Get token from localStorage directly
+
         setAuth(
           {
             ...user,
-            full_name: updatedUser.full_name,
+            full_name: updatedUser.full_name || user.full_name,
             avatar: updatedUser.avatar,
           },
-          user.token || "",
+          currentToken || "", // <-- Use the current token
         );
       }
-      // queryClient.invalidateQueries({ queryKey: ["profile"] });
       toast.success("Profile updated");
     },
     onError: (error: Error) => {
