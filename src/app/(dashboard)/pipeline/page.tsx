@@ -11,6 +11,24 @@ import { PipelineRunSkeleton } from "@/components/ui/Skeleton";
 import { Play, RefreshCw, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 
+const Spinner = ({ className = "text-gray-400" }: { className?: string }) => (
+  <svg
+    className={`animate-spin h-4 w-4 ${className}`}
+    viewBox="0 0 24 24"
+    fill="none"
+  >
+    <circle
+      className="opacity-25"
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      strokeWidth="4"
+    />
+    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+  </svg>
+);
+
 export default function PipelinePage() {
   const queryClient = useQueryClient();
   const [showModal, setShowModal] = useState(false);
@@ -54,7 +72,6 @@ export default function PipelinePage() {
     if (!file) return;
     setSelectedFile(file);
 
-    // Parse CSV client-side — send as JSON so Railway doesn't need file access
     const text = await file.text();
     const lines = text.trim().split("\n");
     if (lines.length < 2) return;
@@ -94,6 +111,9 @@ export default function PipelinePage() {
     return s < 60 ? `${s}s` : `${Math.floor(s / 60)}m ${s % 60}s`;
   };
 
+  const isActive = (run: (typeof runs)[0]) =>
+    run.status === "queued" || run.status === "running";
+
   return (
     <div className="p-6">
       <div className="flex items-center justify-end mb-6 gap-2">
@@ -120,7 +140,7 @@ export default function PipelinePage() {
           <div className="hidden md:block bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-800 ">
+                <tr className="border-b border-gray-800">
                   {[
                     "Run",
                     "Status",
@@ -180,19 +200,25 @@ export default function PipelinePage() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-gray-400">
-                        {run.jobs_found}
+                        {isActive(run) ? <Spinner /> : run.jobs_found}
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-blue-400">
-                          {run.leads_yes} yes
-                        </span>
-                        <span className="text-gray-600 mx-1">·</span>
-                        <span className="text-yellow-400">
-                          {run.leads_maybe} maybe
-                        </span>
+                        {isActive(run) ? (
+                          <Spinner />
+                        ) : (
+                          <>
+                            <span className="text-blue-400">
+                              {run.leads_yes} yes
+                            </span>
+                            <span className="text-gray-600 mx-1">·</span>
+                            <span className="text-yellow-400">
+                              {run.leads_maybe} maybe
+                            </span>
+                          </>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-gray-400">
-                        {formatDuration(run)}
+                        {isActive(run) ? <Spinner /> : formatDuration(run)}
                       </td>
                       <td className="px-4 py-3 text-gray-500 text-xs">
                         {run.triggered_by || "—"}
@@ -239,27 +265,43 @@ export default function PipelinePage() {
                   <div className="grid grid-cols-2 gap-3 text-xs">
                     <div>
                       <p className="text-gray-600">Jobs Found</p>
-                      <p className="text-gray-300 font-medium">
-                        {run.jobs_found}
-                      </p>
+                      {isActive(run) ? (
+                        <Spinner className="text-gray-400 mt-1" />
+                      ) : (
+                        <p className="text-gray-300 font-medium">
+                          {run.jobs_found}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <p className="text-gray-600">Duration</p>
-                      <p className="text-gray-300 font-medium">
-                        {formatDuration(run)}
-                      </p>
+                      {isActive(run) ? (
+                        <Spinner className="text-gray-400 mt-1" />
+                      ) : (
+                        <p className="text-gray-300 font-medium">
+                          {formatDuration(run)}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <p className="text-gray-600">Leads (Yes)</p>
-                      <p className="text-blue-400 font-medium">
-                        {run.leads_yes}
-                      </p>
+                      {isActive(run) ? (
+                        <Spinner className="text-gray-400 mt-1" />
+                      ) : (
+                        <p className="text-blue-400 font-medium">
+                          {run.leads_yes}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <p className="text-gray-600">Leads (Maybe)</p>
-                      <p className="text-yellow-400 font-medium">
-                        {run.leads_maybe}
-                      </p>
+                      {isActive(run) ? (
+                        <Spinner className="text-gray-400 mt-1" />
+                      ) : (
+                        <p className="text-yellow-400 font-medium">
+                          {run.leads_maybe}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -378,7 +420,6 @@ export default function PipelinePage() {
                 />
               </div>
 
-              {/* Options */}
               {/* Options */}
               <div className="space-y-3">
                 <label className="flex items-center gap-2 cursor-pointer">
