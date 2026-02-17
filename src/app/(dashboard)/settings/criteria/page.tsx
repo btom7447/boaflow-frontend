@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ClipboardPlus, Plus, Trash2 } from "lucide-react";
 import { clsx } from "clsx";
+import { toast } from "sonner";
 
 /* =============================
    Types
@@ -66,7 +67,11 @@ export default function CriteriaPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["criteria"] });
       setShowModal(false);
+      toast.success(`Criteria added`)
     },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to add criteria")
+    }
   });
 
   const deleteMutation = useMutation({
@@ -74,7 +79,11 @@ export default function CriteriaPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["criteria"] });
       setConfirmDelete(null);
+      toast.success(`Criteria removed`)
     },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to remove criteria")
+    }
   });
 
   const grouped = CRITERIA_TYPES.map((type) => ({

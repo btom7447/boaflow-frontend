@@ -8,6 +8,8 @@ import {
   Cog,
   UserCog,
   ClipboardCheck,
+  Target,
+  Crosshair,
 } from "lucide-react";
 
 export type AppRole = "admin" | "sales" | "client";
@@ -22,9 +24,15 @@ export type NavItem = {
 
 export const NAVIGATION: NavItem[] = [
   {
+    href: "/",
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    roles: ["admin", "sales", "client"],
+  },
+  {
     href: "/leads",
     label: "Leads",
-    icon: LayoutDashboard,
+    icon: Crosshair,
     roles: ["admin", "sales", "client"],
   },
   {

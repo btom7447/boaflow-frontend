@@ -8,6 +8,7 @@ import { useAuthStore } from "@/store/authStore";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Eye, EyeClosed, Zap } from "lucide-react";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,12 +31,15 @@ export default function LoginPage() {
         email,
         role: tokenResponse.role as "admin" | "sales" | "client",
         full_name: tokenResponse.full_name,
+        avatar: null,
       };
       setAuth(user, tokenResponse.access_token);
+      toast.success("Welcome back!")
       router.push("/leads");
     } catch (err) {
       console.error("Login error:", err);
       setError("Invalid email or password");
+      toast.error("Invalid email or password")
     } finally {
       setLoading(false);
     }

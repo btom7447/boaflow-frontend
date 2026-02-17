@@ -5,6 +5,8 @@ export interface User {
   email: string;
   role: "admin" | "sales" | "client";
   full_name: string | null;
+  avatar: string | null; // base64 encoded image
+  token?: string;
 }
 
 export interface TokenResponse {
@@ -123,7 +125,7 @@ export interface FitCriteria {
 export interface AppUser {
   id: number;
   email: string;
-  full_name: string | null;
+  full_name?: string;
   role: "admin" | "sales" | "client";
   is_active: boolean;
 }

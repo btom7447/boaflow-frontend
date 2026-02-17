@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { settingsApi } from "@/lib/api";
 import { RoleConfig } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Search } from "lucide-react";
+import { toast } from "sonner";
 
 type ModalState =
   | { mode: "closed" }
@@ -18,6 +19,7 @@ type ModalState =
 export default function RolesPage() {
   const queryClient = useQueryClient();
   const [modal, setModal] = useState<ModalState>({ mode: "closed" });
+  const [searchQuery, setSearchQuery] = useState("");
   const [form, setForm] = useState({
     key: "",
     label: "",
@@ -35,7 +37,11 @@ export default function RolesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["roles"] });
       setModal({ mode: "closed" });
+      toast.success(`Role ${form.label} created`)
     },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to create role")
+    }
   });
 
   const updateMutation = useMutation({
@@ -49,7 +55,11 @@ export default function RolesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["roles"] });
       setModal({ mode: "closed" });
+      toast.success(`Role ${form.label} updated`)
     },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to update role")
+    }
   });
 
   const deleteMutation = useMutation({
@@ -57,7 +67,11 @@ export default function RolesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["roles"] });
       setModal({ mode: "closed" });
+      toast.success(`Role ${form.label} deactivated`)
     },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to deactivate role")
+    }
   });
 
   const openCreate = () => {
@@ -95,13 +109,47 @@ export default function RolesPage() {
     }
   };
 
+  const filteredRoles = useMemo(() => {
+    if (!searchQuery.trim()) return roles;
+    const query = searchQuery.toLowerCase();
+    return roles.filter(
+      (role) =>
+        role.key.toLowerCase().includes(query) ||
+        role.label.toLowerCase().includes(query) ||
+        role.description.toLowerCase().includes(query),
+    );
+  }, [roles, searchQuery]);
+
   const isPending = createMutation.isPending || updateMutation.isPending;
   const error = createMutation.error || updateMutation.error;
 
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-gray-500">{roles.length} active roles</p>
+      <div className="flex flex-wrap items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <p className="text-sm text-gray-500">{roles.length} active roles</p>
+          <div className="relative w-64">
+            <Search
+              size={14}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+            />
+            <input
+              type="text"
+              placeholder="Search roles..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-8 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+        </div>
         <Button variant="primary" size="sm" onClick={openCreate}>
           <Plus size={14} className="mr-1.5" />
           Add Role
@@ -130,17 +178,19 @@ export default function RolesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-800">
-              {roles.length === 0 ? (
+              {filteredRoles.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="px-4 py-12 text-center text-gray-500"
                   >
-                    No roles configured
+                    {searchQuery
+                      ? `No roles found for "${searchQuery}"`
+                      : "No roles configured"}
                   </td>
                 </tr>
               ) : (
-                roles.map((role) => (
+                filteredRoles.map((role) => (
                   <tr
                     key={role.id}
                     className="hover:bg-gray-800/50 transition-colors"

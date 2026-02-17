@@ -20,16 +20,35 @@ const PAGE_TITLES: Record<string, string> = {
   "/profile": "Profile",
 };
 
-function Avatar({ name }: { name: string }) {
-  const parts = name.trim().split(" ");
+function Avatar({
+  name,
+  avatarBase64,
+}: {
+  name: string;
+  avatarBase64?: string | null;
+}) {
   const initials =
-    parts.length >= 2
-      ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
-      : name.slice(0, 2).toUpperCase();
+    name
+      .trim()
+      .split(" ")
+      .map((p) => p[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "U";
 
   return (
-    <div className="w-8 h-8 rounded-full bg-emerald-600/20 border border-emerald-600/30 flex items-center justify-center shrink-0">
-      <span className="text-xs font-semibold text-emerald-400">{initials}</span>
+    <div className="w-8 h-8 rounded-full bg-emerald-600/20 border border-emerald-600/30 flex items-center justify-center flex-shrink-0 overflow-hidden">
+      {avatarBase64 ? (
+        <img
+          src={`data:image/png;base64,${avatarBase64}`}
+          alt="Avatar"
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <span className="text-xs font-semibold text-emerald-400">
+          {initials}
+        </span>
+      )}
     </div>
   );
 }
@@ -86,7 +105,7 @@ export function TopBar({ mobileOpen, setMobileOpen }: TopBarProps) {
           onClick={() => setOpen((o) => !o)}
           className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-gray-800 transition-colors"
         >
-          <Avatar name={displayName} />
+          <Avatar name={displayName} avatarBase64={user?.avatar} />
           <div className="text-left hidden sm:block">
             <p className="text-xs font-medium text-gray-200 leading-tight">
               {displayName}

@@ -10,6 +10,7 @@ import {
   RoleConfig,
   FitCriteria,
   AppUser,
+  LeadStatus,
 } from "./types";
 
 // ─── Client Setup ─────────────────────────────────────────
@@ -76,6 +77,32 @@ export const authApi = {
   },
 };
 
+// ─── Profile ──────────────────────────────────────────────
+
+export const profileApi = {
+  updateProfile: async (payload: {
+    full_name?: string
+    avatar_base64?: string
+  }): Promise<User> => {
+    const { data } = await client.patch<User>("/api/profile/", payload)
+    return data
+  },
+
+  changePassword: async (
+    currentPassword: string,
+    newPassword: string
+  ): Promise<{ message: string }> => {
+    const { data } = await client.post<{ message: string }>(
+      "/api/profile/change-password",
+      {
+        current_password: currentPassword,
+        new_password: newPassword,
+      }
+    )
+    return data
+  },
+}
+
 // ─── Leads ────────────────────────────────────────────────
 
 export const leadsApi = {
@@ -89,7 +116,7 @@ export const leadsApi = {
     const total = parseInt(response.headers["x-total-count"] ?? "0", 10);
     return { data: response.data, total };
   },
-  
+
   getLead: async (id: number): Promise<Lead> => {
     const { data } = await client.get<Lead>(`/api/leads/${id}`);
     return data;
@@ -99,7 +126,34 @@ export const leadsApi = {
     const { data } = await client.patch<Lead>(`/api/leads/${id}`, update);
     return data;
   },
+
+  // Add to leadsApi:
+  bulkUpdateLeads: async (
+    leadIds: number[],
+    status: LeadStatus,
+  ): Promise<{ updated: number; total: number }> => {
+    const { data } = await client.patch<{ updated: number; total: number }>(
+      "/api/leads/bulk-update",
+      { lead_ids: leadIds, lead_status: status },
+    );
+    return data;
+  },
 };
+
+// ─── Export ───────────────────────────────────────────────
+
+export const exportApi = {
+  exportLeadsCSV: async (filters: LeadFilters = {}): Promise<Blob> => {
+    const params = Object.fromEntries(
+      Object.entries(filters).filter(([, v]) => v !== undefined && v !== null)
+    )
+    const response = await client.get("/api/export/leads", {
+      params,
+      responseType: "blob",
+    })
+    return response.data
+  },
+}
 
 // ─── Pipeline ─────────────────────────────────────────────
 
@@ -194,5 +248,29 @@ export const settingsApi = {
     await client.delete(`/api/users/${id}`);
   },
 };
+
+// ─── Dashboard ────────────────────────────────────────────
+
+export const dashboardApi = {
+  getStats: async (): Promise<{
+    total_leads: number
+    leads_yes: number
+    leads_maybe: number
+    leads_no: number
+    avg_confidence: number
+    conversion_rate: number
+    leads_over_time: { date: string; count: number }[]
+    recent_runs: Array<{
+      id: number
+      status: string
+      jobs_found: number
+      leads_yes: number
+      created_at: string
+    }>
+  }> => {
+    const { data } = await client.get("/api/dashboard/stats")
+    return data
+  },
+}
 
 export default client;

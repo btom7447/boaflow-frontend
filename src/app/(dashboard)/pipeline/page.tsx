@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { PipelineRunSkeleton } from "@/components/ui/Skeleton";
 import { Play, RefreshCw, Upload, X } from "lucide-react";
+import { toast } from "sonner";
 
 export default function PipelinePage() {
   const queryClient = useQueryClient();
@@ -41,7 +42,11 @@ export default function PipelinePage() {
       queryClient.invalidateQueries({ queryKey: ["pipeline-runs"] });
       setShowModal(false);
       setSelectedFile(null);
+      toast.success("Pipeline run started")
     },
+      onError: (error: Error) => {
+      toast.error(error.message || "Failed to start pipeline")
+    }
   });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,90 +115,164 @@ export default function PipelinePage() {
       {isLoading ? (
         <PipelineRunSkeleton rows={5} />
       ) : (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-x-scroll xl:overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-800 ">
-                {[
-                  "Run",
-                  "Status",
-                  "Jobs Found",
-                  "Leads",
-                  "Duration",
-                  "Triggered By",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-800">
-              {runs.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="px-4 py-12 text-center text-gray-500"
-                  >
-                    No pipeline runs yet — trigger your first run above
-                  </td>
+        <>
+          {/* Desktop Table */}
+          <div className="hidden md:block bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-800 ">
+                  {[
+                    "Run",
+                    "Status",
+                    "Jobs Found",
+                    "Leads",
+                    "Duration",
+                    "Triggered By",
+                  ].map((h) => (
+                    <th
+                      key={h}
+                      className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
-              ) : (
-                runs.map((run) => (
-                  <tr
-                    key={run.id}
-                    className="hover:bg-gray-800/50 transition-colors"
-                  >
-                    <td className="px-4 py-3">
-                      <p className="font-medium text-gray-200">Run #{run.id}</p>
+              </thead>
+              <tbody className="divide-y divide-gray-800">
+                {runs.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="px-4 py-12 text-center text-gray-500"
+                    >
+                      No pipeline runs yet — trigger your first run above
+                    </td>
+                  </tr>
+                ) : (
+                  runs.map((run) => (
+                    <tr
+                      key={run.id}
+                      className="hover:bg-gray-800/50 transition-colors"
+                    >
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-gray-200">
+                          Run #{run.id}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {new Date(run.created_at).toLocaleString()}
+                        </p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Badge
+                          label={
+                            run.status.charAt(0).toUpperCase() +
+                            run.status.slice(1)
+                          }
+                          colorClass={
+                            RUN_STATUS_COLORS[run.status] ||
+                            "bg-gray-800 text-gray-400"
+                          }
+                        />
+                        {run.dry_run && (
+                          <span className="ml-2 text-xs text-gray-500">
+                            dry run
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-gray-400">
+                        {run.jobs_found}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="text-emerald-400">
+                          {run.leads_yes} yes
+                        </span>
+                        <span className="text-gray-600 mx-1">·</span>
+                        <span className="text-yellow-400">
+                          {run.leads_maybe} maybe
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-gray-400">
+                        {formatDuration(run)}
+                      </td>
+                      <td className="px-4 py-3 text-gray-500 text-xs">
+                        {run.triggered_by || "—"}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-3">
+            {runs.length === 0 ? (
+              <div className="bg-gray-900 border border-gray-800 rounded-xl px-4 py-12 text-center text-sm text-gray-500">
+                No pipeline runs yet — trigger your first run above
+              </div>
+            ) : (
+              runs.map((run) => (
+                <div
+                  key={run.id}
+                  className="bg-gray-900 border border-gray-800 rounded-xl p-4"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <p className="font-medium text-gray-200 text-sm">
+                        Run #{run.id}
+                      </p>
                       <p className="text-xs text-gray-500 mt-0.5">
                         {new Date(run.created_at).toLocaleString()}
                       </p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge
-                        label={
-                          run.status.charAt(0).toUpperCase() +
-                          run.status.slice(1)
-                        }
-                        colorClass={
-                          RUN_STATUS_COLORS[run.status] ||
-                          "bg-gray-800 text-gray-400"
-                        }
-                      />
-                      {run.dry_run && (
-                        <span className="ml-2 text-xs text-gray-500">
-                          dry run
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-gray-400">
-                      {run.jobs_found}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-emerald-400">
-                        {run.leads_yes} yes
-                      </span>
-                      <span className="text-gray-600 mx-1">·</span>
-                      <span className="text-yellow-400">
-                        {run.leads_maybe} maybe
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-400">
-                      {formatDuration(run)}
-                    </td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">
-                      {run.triggered_by || "—"}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                    </div>
+                    <Badge
+                      label={
+                        run.status.charAt(0).toUpperCase() + run.status.slice(1)
+                      }
+                      colorClass={
+                        RUN_STATUS_COLORS[run.status] ||
+                        "bg-gray-800 text-gray-400"
+                      }
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <p className="text-gray-600">Jobs Found</p>
+                      <p className="text-gray-300 font-medium">
+                        {run.jobs_found}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600">Duration</p>
+                      <p className="text-gray-300 font-medium">
+                        {formatDuration(run)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600">Leads (Yes)</p>
+                      <p className="text-emerald-400 font-medium">
+                        {run.leads_yes}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600">Leads (Maybe)</p>
+                      <p className="text-yellow-400 font-medium">
+                        {run.leads_maybe}
+                      </p>
+                    </div>
+                  </div>
+
+                  {run.dry_run && (
+                    <p className="text-xs text-gray-600 mt-3 pt-3 border-t border-gray-800">
+                      Dry run
+                    </p>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </>
       )}
 
       {/* Trigger Modal */}

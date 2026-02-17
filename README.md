@@ -103,3 +103,5 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
  Redis caching on backend — cache lead counts, role configs
  CDN for static assets — Cloudflare for faster load times
  Image optimization — if you add company logos later
+
+Filter View for Tables (default is alphabetical)
