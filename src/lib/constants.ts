@@ -6,7 +6,7 @@ export const FIT_LABELS: Record<string, string> = {
 };
 
 export const FIT_COLORS: Record<string, string> = {
-  yes: "bg-green-100 text-green-800",
+  yes: "bg-blue-100 text-blue-800",
   no: "bg-red-100 text-red-800",
   maybe: "bg-yellow-100 text-yellow-800",
   unclassified: "bg-gray-100 text-gray-600",
@@ -24,16 +24,16 @@ export const STATUS_LABELS: Record<string, string> = {
 export const STATUS_COLORS: Record<string, string> = {
   new: "bg-blue-100 text-blue-800",
   contacted: "bg-purple-100 text-purple-800",
-  interested: "bg-green-100 text-green-800",
+  interested: "bg-blue-100 text-blue-800",
   not_interested: "bg-red-100 text-red-800",
-  converted: "bg-emerald-100 text-emerald-800",
+  converted: "bg-blue-100 text-blue-800",
   ignored: "bg-gray-100 text-gray-500",
 };
 
 export const RUN_STATUS_COLORS: Record<string, string> = {
   queued: "bg-gray-100 text-gray-600",
   running: "bg-blue-100 text-blue-800",
-  completed: "bg-green-100 text-green-800",
+  completed: "bg-blue-100 text-blue-800",
   failed: "bg-red-100 text-red-800",
 };
 

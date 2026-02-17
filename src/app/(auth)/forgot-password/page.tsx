@@ -25,13 +25,13 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center p-5">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
       </div>
 
       <div className="w-full max-w-md relative">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2.5 mb-8">
-          <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center shadow-lg">
+          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg">
             <Zap size={18} className="text-white" />
           </div>
           <span className="text-xl font-semibold text-white tracking-tight">
@@ -45,8 +45,8 @@ export default function ForgotPasswordPage() {
             /* ── Success state ── */
             <div className="text-center py-4">
               <div className="flex justify-center mb-4">
-                <div className="w-12 h-12 rounded-full bg-emerald-600/15 flex items-center justify-center">
-                  <CheckCircle size={24} className="text-emerald-400" />
+                <div className="w-12 h-12 rounded-full bg-blue-600/15 flex items-center justify-center">
+                  <CheckCircle size={24} className="text-blue-400" />
                 </div>
               </div>
               <h2 className="text-lg font-semibold text-white mb-2">
@@ -58,7 +58,7 @@ export default function ForgotPasswordPage() {
               </p>
               <Link
                 href="/login"
-                className="text-sm text-emerald-500 hover:text-emerald-400 transition-colors flex items-center justify-center gap-1.5"
+                className="text-sm text-blue-500 hover:text-blue-400 transition-colors flex items-center justify-center gap-1.5"
               >
                 <ArrowLeft size={14} />
                 Back to sign in

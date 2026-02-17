@@ -20,10 +20,9 @@ export function Button({
     <button
       disabled={disabled || loading}
       className={clsx(
-        "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed",
+        "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed",
         {
-          "bg-emerald-600 hover:bg-emerald-500 text-white":
-            variant === "primary",
+          "bg-blue-600 hover:bg-blue-500 text-white": variant === "primary",
           "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700":
             variant === "secondary",
           "bg-red-900/50 hover:bg-red-900 text-red-300 border border-red-800":

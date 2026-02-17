@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { NAVIGATION } from "@/app/config/navigation";
+import Image from "next/image";
 
 type SidebarProps = {
   mobileOpen: boolean;
@@ -72,8 +73,8 @@ export function Sidebar({
         <div className="px-4 py-5 border-b border-gray-800 group relative">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center">
-                <Zap size={14} className="text-white" />
+              <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center">
+                <Image src={"/favicon.png"} alt="Boaflow Logo" width={30} height={30} objectFit="contain" className="object-contain" />
               </div>
 
               {!collapsed && (
@@ -129,7 +130,7 @@ export function Sidebar({
                       "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all",
                       collapsed && "justify-center",
                       isActive
-                        ? "text-emerald-400"
+                        ? "text-blue-400"
                         : "text-gray-400 hover:text-gray-200 hover:bg-gray-800",
                     )}
                   >
@@ -167,7 +168,7 @@ export function Sidebar({
                             className={clsx(
                               "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm",
                               active
-                                ? "bg-emerald-600/15 text-emerald-400 font-medium"
+                                ? "bg-blue-600/15 text-blue-400 font-medium"
                                 : "text-gray-500 hover:text-gray-200 hover:bg-gray-800",
                             )}
                           >
@@ -192,7 +193,7 @@ export function Sidebar({
                   "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all",
                   collapsed && "justify-center",
                   isActive
-                    ? "bg-emerald-600/15 text-emerald-400 font-medium"
+                    ? "bg-blue-600/15 text-blue-400 font-medium"
                     : "text-gray-400 hover:text-gray-200 hover:bg-gray-800",
                 )}
               >

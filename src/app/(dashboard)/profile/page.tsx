@@ -66,11 +66,11 @@ export default function ProfilePage() {
       setConfirmPassword("");
       setShowPasswordForm(false);
       setPasswordError("");
-      toast.success("Password changed successfully")
+      toast.success("Password changed successfully");
     },
     onError: (error: Error) => {
       setPasswordError(error.message);
-      toast.error(error.message || "Failed to change password")
+      toast.error(error.message || "Failed to change password");
     },
   });
 
@@ -141,8 +141,8 @@ export default function ProfilePage() {
                 className={clsx(
                   "w-20 h-20 rounded-full flex items-center justify-center border-2",
                   avatarPreview || user?.avatar
-                    ? "border-emerald-600/30"
-                    : "border-emerald-600/20 bg-emerald-600/10",
+                    ? "border-blue-600/30"
+                    : "border-blue-600/20 bg-blue-600/10",
                 )}
               >
                 {avatarPreview || user?.avatar ? (
@@ -154,14 +154,14 @@ export default function ProfilePage() {
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
-                  <span className="text-lg font-semibold text-emerald-400">
+                  <span className="text-lg font-semibold text-blue-400">
                     {initials}
                   </span>
                 )}
               </div>
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="absolute bottom-0 right-0 w-7 h-7 bg-emerald-600 hover:bg-emerald-500 rounded-full flex items-center justify-center transition-colors shadow-lg"
+                className="absolute bottom-0 right-0 w-7 h-7 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-colors shadow-lg"
               >
                 <Camera size={14} className="text-white" />
               </button>
@@ -291,7 +291,7 @@ export default function ProfilePage() {
               )}
 
               {changePasswordMutation.isSuccess && (
-                <p className="text-sm text-emerald-400 bg-emerald-950/30 border border-emerald-900/50 rounded-lg px-3 py-2">
+                <p className="text-sm text-blue-400 bg-blue-950/30 border border-blue-900/50 rounded-lg px-3 py-2">
                   Password changed successfully
                 </p>
               )}

@@ -37,7 +37,7 @@ function Avatar({
       .toUpperCase() || "U";
 
   return (
-    <div className="w-8 h-8 rounded-full bg-emerald-600/20 border border-emerald-600/30 flex items-center justify-center flex-shrink-0 overflow-hidden">
+    <div className="w-8 h-8 rounded-full bg-blue-600/20 border border-blue-600/30 flex items-center justify-center flex-shrink-0 overflow-hidden">
       {avatarBase64 ? (
         <img
           src={`data:image/png;base64,${avatarBase64}`}
@@ -45,9 +45,7 @@ function Avatar({
           className="w-full h-full object-cover"
         />
       ) : (
-        <span className="text-xs font-semibold text-emerald-400">
-          {initials}
-        </span>
+        <span className="text-xs font-semibold text-blue-400">{initials}</span>
       )}
     </div>
   );

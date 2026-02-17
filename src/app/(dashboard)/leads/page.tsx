@@ -1,33 +1,40 @@
-"use client"
+"use client";
 
-import { useMemo, useRef, useState } from "react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { exportApi, leadsApi } from "@/lib/api"
-import { Lead, LeadFilters, FitType, LeadStatus } from "@/lib/types"
+import { useMemo, useRef, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { exportApi, leadsApi } from "@/lib/api";
+import { Lead, LeadFilters, FitType, LeadStatus } from "@/lib/types";
 import {
   FIT_LABELS,
   FIT_COLORS,
   STATUS_LABELS,
   STATUS_COLORS,
   REMOTE_FLAG_LABELS,
-} from "@/lib/constants"
-import { Badge } from "@/components/ui/Badge"
-import { Button } from "@/components/ui/Button"
-import { TableSkeleton } from "@/components/ui/Skeleton"
-import { Pagination } from "@/components/ui/Pagination"
-import { ExternalLink, ChevronDown, X, Search, Download, Check } from "lucide-react"
-import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts"
-import { toast } from "sonner"
-import { error } from "console"
+} from "@/lib/constants";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { TableSkeleton } from "@/components/ui/Skeleton";
+import { Pagination } from "@/components/ui/Pagination";
+import {
+  ExternalLink,
+  ChevronDown,
+  X,
+  Search,
+  Download,
+  Check,
+} from "lucide-react";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { toast } from "sonner";
+import { error } from "console";
 
-const LIMIT = 30
+const LIMIT = 30;
 
 const FIT_OPTIONS: { value: FitType | ""; label: string }[] = [
   { value: "", label: "All Fits" },
   { value: "yes", label: "Yes" },
   { value: "maybe", label: "Maybe" },
   { value: "no", label: "No" },
-]
+];
 
 const STATUS_OPTIONS: { value: LeadStatus | ""; label: string }[] = [
   { value: "", label: "All Statuses" },
@@ -37,7 +44,7 @@ const STATUS_OPTIONS: { value: LeadStatus | ""; label: string }[] = [
   { value: "not_interested", label: "Not Interested" },
   { value: "converted", label: "Converted" },
   { value: "ignored", label: "Ignored" },
-]
+];
 
 export default function LeadsPage() {
   const queryClient = useQueryClient();
@@ -50,9 +57,9 @@ export default function LeadsPage() {
   const [editStatus, setEditStatus] = useState<LeadStatus>("new");
   const [searchQuery, setSearchQuery] = useState("");
   const [isExporting, setIsExporting] = useState(false);
-    const [selectedLeads, setSelectedLeads] = useState<Set<number>>(new Set());
-    const [bulkStatus, setBulkStatus] = useState<LeadStatus>("contacted");
-    const [showBulkModal, setShowBulkModal] = useState(false);
+  const [selectedLeads, setSelectedLeads] = useState<Set<number>>(new Set());
+  const [bulkStatus, setBulkStatus] = useState<LeadStatus>("contacted");
+  const [showBulkModal, setShowBulkModal] = useState(false);
 
   const { data: result, isLoading } = useQuery({
     queryKey: ["leads", filters],
@@ -83,11 +90,11 @@ export default function LeadsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       setSelectedLead(null);
-      toast.success("Lead updated")
+      toast.success("Lead updated");
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to update lead")
-    }
+      toast.error(error.message || "Failed to update lead");
+    },
   });
 
   const openDetail = (lead: Lead) => {
@@ -116,10 +123,10 @@ export default function LeadsPage() {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      toast.success("Leads exported successfully")
+      toast.success("Leads exported successfully");
     } catch (error) {
       console.error("Export failed:", error);
-      toast.error("Failed to update leads")
+      toast.error("Failed to update leads");
     } finally {
       setIsExporting(false);
     }
@@ -137,11 +144,11 @@ export default function LeadsPage() {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       setSelectedLeads(new Set());
       setShowBulkModal(false);
-      toast.success("Updated leads")
+      toast.success("Updated leads");
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to update leads")
-    }
+      toast.error(error.message || "Failed to update leads");
+    },
   });
 
   const toggleLead = (id: number) => {
@@ -193,7 +200,7 @@ export default function LeadsPage() {
           </p>
           {selectedLeads.size > 0 && (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-emerald-400 font-medium">
+              <span className="text-sm text-blue-400 font-medium">
                 {selectedLeads.size} selected
               </span>
               <Button
@@ -233,7 +240,7 @@ export default function LeadsPage() {
               placeholder="Search leads..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-8 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full pl-9 pr-8 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {searchQuery && (
               <button
@@ -335,7 +342,7 @@ export default function LeadsPage() {
                           type="checkbox"
                           checked={selectedLeads.has(lead.id)}
                           onChange={() => toggleLead(lead.id)}
-                          className="rounded border-gray-700 bg-gray-800 text-emerald-500 focus:ring-emerald-500"
+                          className="rounded border-gray-700 bg-gray-800 text-blue-500 focus:ring-blue-500"
                         />
                       </td>
                       <td className="px-4 py-3">
@@ -397,7 +404,7 @@ export default function LeadsPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="text-gray-500 hover:text-emerald-400 transition-colors"
+                          className="text-gray-500 hover:text-blue-400 transition-colors"
                         >
                           <ExternalLink size={14} />
                         </a>
@@ -429,7 +436,7 @@ export default function LeadsPage() {
                       type="checkbox"
                       checked={selectedLeads.has(lead.id)}
                       onChange={() => toggleLead(lead.id)}
-                      className="mt-1 rounded border-gray-700 bg-gray-800 text-emerald-500 focus:ring-emerald-500"
+                      className="mt-1 rounded border-gray-700 bg-gray-800 text-blue-500 focus:ring-blue-500"
                     />
                     <div
                       className="flex-1 cursor-pointer"
@@ -483,7 +490,7 @@ export default function LeadsPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="text-emerald-400 hover:text-emerald-300 transition-colors"
+                      className="text-blue-400 hover:text-blue-300 transition-colors"
                     >
                       <ExternalLink size={14} />
                     </a>
@@ -523,7 +530,7 @@ export default function LeadsPage() {
               <select
                 value={bulkStatus}
                 onChange={(e) => setBulkStatus(e.target.value as LeadStatus)}
-                className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {STATUS_OPTIONS.filter((o) => o.value).map((o) => (
                   <option key={o.value} value={o.value}>
@@ -630,7 +637,7 @@ export default function LeadsPage() {
                 <select
                   value={editStatus}
                   onChange={(e) => setEditStatus(e.target.value as LeadStatus)}
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {STATUS_OPTIONS.filter((o) => o.value).map((o) => (
                     <option key={o.value} value={o.value}>
@@ -649,7 +656,7 @@ export default function LeadsPage() {
                   onChange={(e) => setEditNotes(e.target.value)}
                   rows={3}
                   placeholder="Add notes..."
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 />
               </div>
             </div>
@@ -659,7 +666,7 @@ export default function LeadsPage() {
                 href={selectedLead.job_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 transition-colors"
+                className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1.5 transition-colors"
               >
                 <ExternalLink size={13} />
                 View job posting
@@ -694,16 +701,16 @@ function FilterSelect({
   options,
   onChange,
 }: {
-  value: string
-  options: { value: string; label: string }[]
-  onChange: (v: string) => void
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (v: string) => void;
 }) {
   return (
     <div className="relative min-w-30">
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full appearance-none pl-3 pr-8 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
+        className="w-full appearance-none pl-3 pr-8 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
@@ -716,5 +723,5 @@ function FilterSelect({
         className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
       />
     </div>
-  )
+  );
 }

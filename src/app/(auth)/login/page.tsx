@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Eye, EyeClosed, Zap } from "lucide-react";
 import { toast } from "sonner";
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -34,12 +35,12 @@ export default function LoginPage() {
         avatar: null,
       };
       setAuth(user, tokenResponse.access_token);
-      toast.success("Welcome back!")
+      toast.success("Welcome back!");
       router.push("/leads");
     } catch (err) {
       console.error("Login error:", err);
       setError("Invalid email or password");
-      toast.error("Invalid email or password")
+      toast.error("Invalid email or password");
     } finally {
       setLoading(false);
     }
@@ -48,16 +49,22 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center p-5">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
       </div>
 
       <div className="w-full max-w-md relative">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2.5 mb-8">
-          <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center shadow-lg">
-            <Zap size={18} className="text-white" />
+        <div className="flex items-center justify-center gap-0 mb-2">
+          <div className="">
+            <Image
+              src={"/favicon.png"}
+              alt="Boaflow Logo"
+              width={100}
+              height={100}
+              objectFit="cover"
+            />
           </div>
-          <span className="text-xl font-semibold text-white tracking-tight">
+          <span className="text-4xl font-semibold text-white tracking-tight">
             Boaflow
           </span>
         </div>
@@ -107,7 +114,7 @@ export default function LoginPage() {
             <div className="flex justify-end">
               <Link
                 href="/forgot-password"
-                className="text-xs text-emerald-500 hover:text-emerald-400 transition-colors"
+                className="text-xs text-blue-500 hover:text-blue-400 transition-colors"
               >
                 Forgot password?
               </Link>

@@ -35,8 +35,8 @@ const CRITERIA_TYPES: CriteriaTypeMeta[] = [
     value: "required_for_fit",
     label: "Required for Fit",
     description: "Must be true for a YES classification",
-    color: "text-emerald-400 bg-emerald-950/30 border-emerald-800/50",
-    dotColor: "bg-emerald-400",
+    color: "text-blue-400 bg-blue-950/30 border-blue-800/50",
+    dotColor: "bg-blue-400",
   },
   {
     value: "automatic_disqualifier",
@@ -67,11 +67,11 @@ export default function CriteriaPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["criteria"] });
       setShowModal(false);
-      toast.success(`Criteria added`)
+      toast.success(`Criteria added`);
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to add criteria")
-    }
+      toast.error(error.message || "Failed to add criteria");
+    },
   });
 
   const deleteMutation = useMutation({
@@ -79,11 +79,11 @@ export default function CriteriaPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["criteria"] });
       setConfirmDelete(null);
-      toast.success(`Criteria removed`)
+      toast.success(`Criteria removed`);
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to remove criteria")
-    }
+      toast.error(error.message || "Failed to remove criteria");
+    },
   });
 
   const grouped = CRITERIA_TYPES.map((type) => ({
@@ -258,7 +258,7 @@ function AddCriteriaModal({
               rows={3}
               value={form.text}
               onChange={(e) => setForm((f) => ({ ...f, text: e.target.value }))}
-              className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+              className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               autoFocus
             />
           </div>

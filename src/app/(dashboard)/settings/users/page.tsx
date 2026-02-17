@@ -9,7 +9,16 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { Plus, Trash2, X, ChevronDown, EyeClosed, Eye, UserPlus, Search } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  X,
+  ChevronDown,
+  EyeClosed,
+  Eye,
+  UserPlus,
+  Search,
+} from "lucide-react";
 import { clsx } from "clsx";
 import { toast } from "sonner";
 
@@ -50,11 +59,11 @@ export default function UsersPage() {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       setShowModal(false);
       setForm({ email: "", password: "", full_name: "", role: "sales" });
-      toast.success(` User ${form.full_name || form.email} created`)
+      toast.success(` User ${form.full_name || form.email} created`);
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to create user")
-    }
+      toast.error(error.message || "Failed to create user");
+    },
   });
 
   const deactivateMutation = useMutation({
@@ -62,11 +71,11 @@ export default function UsersPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       setConfirmDelete(null);
-      toast.success(`User ${confirmDelete?.full_name} deactivated`)
+      toast.success(`User ${confirmDelete?.full_name} deactivated`);
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to deactivate user")
-    }
+      toast.error(error.message || "Failed to deactivate user");
+    },
   });
 
   const filteredUsers = useMemo(() => {
@@ -100,7 +109,7 @@ export default function UsersPage() {
               placeholder="Search leads..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-8 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full pl-9 pr-8 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {searchQuery && (
               <button
@@ -165,8 +174,8 @@ export default function UsersPage() {
                     >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-7 h-7 rounded-full bg-emerald-600/20 border border-emerald-600/20 flex items-center justify-center shrink-0">
-                            <span className="text-xs font-semibold text-emerald-400">
+                          <div className="w-7 h-7 rounded-full bg-blue-600/20 border border-blue-600/20 flex items-center justify-center shrink-0">
+                            <span className="text-xs font-semibold text-blue-400">
                               {(u.full_name || u.email)
                                 .trim()
                                 .split(" ")
@@ -204,7 +213,7 @@ export default function UsersPage() {
                           label={u.is_active ? "Active" : "Inactive"}
                           colorClass={
                             u.is_active
-                              ? "bg-emerald-950/50 text-emerald-400"
+                              ? "bg-blue-950/50 text-blue-400"
                               : "bg-gray-800 text-gray-500"
                           }
                         />
@@ -294,7 +303,7 @@ export default function UsersPage() {
                     onChange={(e) =>
                       setForm((f) => ({ ...f, role: e.target.value }))
                     }
-                    className="w-full appearance-none px-3 py-2 pr-8 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full appearance-none px-3 py-2 pr-8 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     {ROLE_OPTIONS.map((o) => (
                       <option key={o.value} value={o.value}>

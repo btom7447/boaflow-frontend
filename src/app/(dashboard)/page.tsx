@@ -1,21 +1,31 @@
-"use client"
+"use client";
 
-import { useQuery } from "@tanstack/react-query"
-import { dashboardApi } from "@/lib/api"
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
-import { TrendingUp, Target, Award, Zap, Crosshair } from "lucide-react"
-import { Badge } from "@/components/ui/Badge"
-import { RUN_STATUS_COLORS } from "@/lib/constants"
-import Link from "next/link"
+import { useQuery } from "@tanstack/react-query";
+import { dashboardApi } from "@/lib/api";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
+import { TrendingUp, Target, Award, Zap, Crosshair } from "lucide-react";
+import { Badge } from "@/components/ui/Badge";
+import { RUN_STATUS_COLORS } from "@/lib/constants";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const { data: stats, isLoading } = useQuery({
     queryKey: ["dashboard-stats"],
     queryFn: dashboardApi.getStats,
-  })
+  });
 
   if (isLoading) {
-    return <DashboardSkeleton />
+    return <DashboardSkeleton />;
   }
 
   if (!stats) {
@@ -23,14 +33,14 @@ export default function DashboardPage() {
       <div className="p-6">
         <p className="text-gray-500">Failed to load dashboard</p>
       </div>
-    )
+    );
   }
 
   const fitData = [
     { name: "Yes", value: stats.leads_yes, color: "#10b981" },
     { name: "Maybe", value: stats.leads_maybe, color: "#f59e0b" },
     { name: "No", value: stats.leads_no, color: "#ef4444" },
-  ]
+  ];
 
   return (
     <div className="p-6 space-y-6">
@@ -161,7 +171,7 @@ export default function DashboardPage() {
           </h2>
           <Link
             href="/pipeline"
-            className="text-xs text-emerald-400 hover:text-emerald-300 transition-colors"
+            className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
           >
             View all →
           </Link>
@@ -211,9 +221,7 @@ export default function DashboardPage() {
                   </td>
                   <td className="px-6 py-3 text-gray-400">{run.jobs_found}</td>
                   <td className="px-6 py-3">
-                    <span className="text-emerald-400">
-                      {run.leads_yes} yes
-                    </span>
+                    <span className="text-blue-400">{run.leads_yes} yes</span>
                   </td>
                   <td className="px-6 py-3 text-gray-500 text-xs">
                     {new Date(run.created_at).toLocaleDateString()}
@@ -235,17 +243,17 @@ function StatCard({
   trend,
   trendUp,
 }: {
-  icon: any
-  label: string
-  value: string
-  trend?: string
-  trendUp?: boolean
+  icon: any;
+  label: string;
+  value: string;
+  trend?: string;
+  trendUp?: boolean;
 }) {
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
       <div className="flex items-center justify-between mb-3">
-        <div className="w-10 h-10 rounded-lg bg-emerald-600/10 flex items-center justify-center">
-          <Icon size={18} className="text-emerald-400" />
+        <div className="w-10 h-10 rounded-lg bg-blue-600/10 flex items-center justify-center">
+          <Icon size={18} className="text-blue-400" />
         </div>
       </div>
       <p className="text-2xl font-semibold text-white mb-1">{value}</p>
@@ -253,14 +261,14 @@ function StatCard({
       {trend && (
         <p
           className={`text-xs mt-2 ${
-            trendUp ? "text-emerald-400" : "text-gray-600"
+            trendUp ? "text-blue-400" : "text-gray-600"
           }`}
         >
           {trend}
         </p>
       )}
     </div>
-  )
+  );
 }
 
 function DashboardSkeleton() {
@@ -274,7 +282,10 @@ function DashboardSkeleton() {
       {/* Stats Cards Skeleton */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="bg-gray-900 border border-gray-800 rounded-xl p-5">
+          <div
+            key={i}
+            className="bg-gray-900 border border-gray-800 rounded-xl p-5"
+          >
             <div className="w-10 h-10 rounded-lg bg-gray-800 animate-pulse mb-3" />
             <div className="h-8 w-20 bg-gray-800 rounded animate-pulse mb-2" />
             <div className="h-3 w-24 bg-gray-800 rounded animate-pulse" />
@@ -285,7 +296,10 @@ function DashboardSkeleton() {
       {/* Charts Skeleton */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {Array.from({ length: 2 }).map((_, i) => (
-          <div key={i} className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+          <div
+            key={i}
+            className="bg-gray-900 border border-gray-800 rounded-xl p-6"
+          >
             <div className="h-4 w-32 bg-gray-800 rounded animate-pulse mb-4" />
             <div className="h-48 bg-gray-800 rounded animate-pulse" />
           </div>
@@ -304,5 +318,5 @@ function DashboardSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }

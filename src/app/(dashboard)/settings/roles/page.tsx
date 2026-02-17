@@ -37,11 +37,11 @@ export default function RolesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["roles"] });
       setModal({ mode: "closed" });
-      toast.success(`Role ${form.label} created`)
+      toast.success(`Role ${form.label} created`);
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to create role")
-    }
+      toast.error(error.message || "Failed to create role");
+    },
   });
 
   const updateMutation = useMutation({
@@ -55,11 +55,11 @@ export default function RolesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["roles"] });
       setModal({ mode: "closed" });
-      toast.success(`Role ${form.label} updated`)
+      toast.success(`Role ${form.label} updated`);
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to update role")
-    }
+      toast.error(error.message || "Failed to update role");
+    },
   });
 
   const deleteMutation = useMutation({
@@ -67,11 +67,11 @@ export default function RolesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["roles"] });
       setModal({ mode: "closed" });
-      toast.success(`Role ${form.label} deactivated`)
+      toast.success(`Role ${form.label} deactivated`);
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to deactivate role")
-    }
+      toast.error(error.message || "Failed to deactivate role");
+    },
   });
 
   const openCreate = () => {
@@ -138,7 +138,7 @@ export default function RolesPage() {
               placeholder="Search roles..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-8 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full pl-9 pr-8 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {searchQuery && (
               <button
@@ -196,7 +196,7 @@ export default function RolesPage() {
                     className="hover:bg-gray-800/50 transition-colors"
                   >
                     <td className="px-4 py-3">
-                      <code className="text-xs text-emerald-400 bg-emerald-950/30 px-1.5 py-0.5 rounded">
+                      <code className="text-xs text-blue-400 bg-blue-950/30 px-1.5 py-0.5 rounded">
                         {role.key}
                       </code>
                     </td>
@@ -281,7 +281,7 @@ export default function RolesPage() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, description: e.target.value }))
                   }
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 />
               </div>
               <div>
@@ -298,7 +298,7 @@ export default function RolesPage() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, examples: e.target.value }))
                   }
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 />
               </div>
 

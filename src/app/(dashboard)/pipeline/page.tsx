@@ -42,11 +42,11 @@ export default function PipelinePage() {
       queryClient.invalidateQueries({ queryKey: ["pipeline-runs"] });
       setShowModal(false);
       setSelectedFile(null);
-      toast.success("Pipeline run started")
+      toast.success("Pipeline run started");
     },
-      onError: (error: Error) => {
-      toast.error(error.message || "Failed to start pipeline")
-    }
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to start pipeline");
+    },
   });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -183,7 +183,7 @@ export default function PipelinePage() {
                         {run.jobs_found}
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-emerald-400">
+                        <span className="text-blue-400">
                           {run.leads_yes} yes
                         </span>
                         <span className="text-gray-600 mx-1">·</span>
@@ -251,7 +251,7 @@ export default function PipelinePage() {
                     </div>
                     <div>
                       <p className="text-gray-600">Leads (Yes)</p>
-                      <p className="text-emerald-400 font-medium">
+                      <p className="text-blue-400 font-medium">
                         {run.leads_yes}
                       </p>
                     </div>
@@ -307,9 +307,9 @@ export default function PipelinePage() {
                 </label>
 
                 {selectedFile ? (
-                  <div className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-gray-800 border border-emerald-600/40">
+                  <div className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-gray-800 border border-blue-600/40">
                     <div className="flex items-center gap-2 min-w-0">
-                      <Upload size={14} className="text-emerald-400 shrink-0" />
+                      <Upload size={14} className="text-blue-400 shrink-0" />
                       <span className="text-sm text-gray-200 truncate">
                         {selectedFile.name}
                       </span>
@@ -335,11 +335,11 @@ export default function PipelinePage() {
                 ) : (
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full px-3 py-4 rounded-lg border border-dashed border-gray-700 hover:border-emerald-600/50 bg-gray-800/50 hover:bg-gray-800 transition-all text-center group"
+                    className="w-full px-3 py-4 rounded-lg border border-dashed border-gray-700 hover:border-blue-600/50 bg-gray-800/50 hover:bg-gray-800 transition-all text-center group"
                   >
                     <Upload
                       size={18}
-                      className="mx-auto mb-1.5 text-gray-500 group-hover:text-emerald-400 transition-colors"
+                      className="mx-auto mb-1.5 text-gray-500 group-hover:text-blue-400 transition-colors"
                     />
                     <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">
                       Click to upload CSV
@@ -368,7 +368,7 @@ export default function PipelinePage() {
                 <input
                   type="number"
                   placeholder="Leave blank to process all"
-                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   onChange={(e) =>
                     setForm((f) => ({
                       ...f,
@@ -388,7 +388,7 @@ export default function PipelinePage() {
                     onChange={(e) =>
                       setForm((f) => ({ ...f, dry_run: e.target.checked }))
                     }
-                    className="rounded border-gray-700 bg-gray-800 text-emerald-500 focus:ring-emerald-500"
+                    className="rounded border-gray-700 bg-gray-800 text-blue-500 focus:ring-blue-500"
                   />
                   <span className="text-sm text-gray-300">Dry run</span>
                   <span className="text-xs text-gray-600">(no DB writes)</span>
@@ -401,7 +401,7 @@ export default function PipelinePage() {
                     onChange={(e) =>
                       setForm((f) => ({ ...f, async_mode: e.target.checked }))
                     }
-                    className="rounded border-gray-700 bg-gray-800 text-emerald-500 focus:ring-emerald-500"
+                    className="rounded border-gray-700 bg-gray-800 text-blue-500 focus:ring-blue-500"
                   />
                   <span className="text-sm text-gray-300">Async mode</span>
                   <span className="text-xs text-gray-600">
@@ -425,7 +425,7 @@ export default function PipelinePage() {
                           concurrency: parseInt(e.target.value) || 10,
                         }))
                       }
-                      className="w-20 px-2 py-1 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-20 px-2 py-1 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <span className="text-xs text-gray-600">
                       companies at once
