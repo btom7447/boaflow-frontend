@@ -13,7 +13,7 @@ import {
 } from "@/lib/constants";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { TableSkeleton } from "@/components/ui/Skeleton";
+import { LeadSkeleton } from "@/components/skeletons/LeadSkeleton";
 import { Pagination } from "@/components/ui/Pagination";
 import {
   ExternalLink,
@@ -289,7 +289,7 @@ export default function LeadsPage() {
 
       {/* Table or skeleton */}
       {isLoading ? (
-        <TableSkeleton rows={8} />
+        <LeadSkeleton rows={8} />
       ) : (
         <>
           {/* Desktop Table */}

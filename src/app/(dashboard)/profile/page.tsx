@@ -122,15 +122,11 @@ export default function ProfilePage() {
     .toUpperCase();
 
   return (
-    <div className="p-6 max-w-2xl">
-      <h1 className="text-xl font-semibold text-white mb-6">
-        Profile Settings
-      </h1>
-
+    <div className="p-6 max-w-5xl mx-auto">
       <div className="space-y-6">
         {/* Avatar & Name */}
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-          <h2 className="text-sm font-medium text-gray-300 mb-4">
+          <h2 className="text-lg font-medium text-gray-300 mb-4">
             Profile Information
           </h2>
 
@@ -151,7 +147,7 @@ export default function ProfilePage() {
                       avatarPreview || `data:image/png;base64,${user?.avatar}`
                     }
                     alt="Avatar"
-                    className="w-full h-full rounded-full object-cover"
+                    className="w-full h-full rounded-full object-top object-cover"
                   />
                 ) : (
                   <span className="text-lg font-semibold text-blue-400">
@@ -182,8 +178,8 @@ export default function ProfilePage() {
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="John Doe"
               />
-              <p className="text-xs text-gray-600 mt-2">{user?.email}</p>
-              <p className="text-xs text-gray-600 capitalize">{user?.role}</p>
+              <p className="text-md text-gray-600 mt-2">{user?.email}</p>
+              <p className="text-md text-gray-500 capitalize">{user?.role}</p>
             </div>
           </div>
 

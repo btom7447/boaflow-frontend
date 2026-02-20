@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { authApi } from "@/lib/api";
+import { authApi, organizationApi } from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { Eye, EyeClosed, Zap } from "lucide-react";
+import { Eye, EyeClosed } from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
+import { authStorage } from "@/lib/auth";
+import { Organization } from "@/lib/types";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,19 +26,42 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
+
     try {
-      const tokenResponse = await authApi.login(email, password);
-      // Build user from login response — avoids a second API call
-      const user = {
-        id: 0, // placeholder — fetched on dashboard load
-        email,
-        role: tokenResponse.role as "admin" | "sales" | "client",
-        full_name: tokenResponse.full_name,
-        avatar: null,
-      };
-      setAuth(user, tokenResponse.access_token);
-      toast.success("Welcome back!");
-      router.push("/leads");
+      // Step 1: Login and get token
+      const loginResponse = await authApi.login(email, password);
+
+      // Step 2: Store token first
+      authStorage.setToken(loginResponse.access_token);
+
+      // Step 3: Fetch organization (ignore 401)
+      let organization: Organization | null = null;
+      try {
+        organization = await organizationApi.getOrganization();
+      } catch (err: any) {
+        if (err.response?.status === 401) {
+          console.warn("Organization fetch unauthorized, ignoring:", err);
+        } else {
+          console.error("Could not fetch organization:", err);
+        }
+      }
+
+      // Step 4: Store everything in auth store
+      setAuth(
+        {
+          id: loginResponse.id,
+          email,
+          full_name: loginResponse.full_name,
+          role: loginResponse.role,
+          avatar: loginResponse.avatar ?? null,
+          organization_id: loginResponse.organization_id,
+        },
+        loginResponse.access_token,
+        organization,
+      );
+
+      toast.success(`Welcome back, ${loginResponse.full_name || email}!`);
+      router.push("/");
     } catch (err) {
       console.error("Login error:", err);
       setError("Invalid email or password");
@@ -52,7 +77,7 @@ export default function LoginPage() {
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
       </div>
 
-      <div className="w-full max-w-md relative">
+      <div className="w-full max-w-xl relative">
         {/* Logo */}
         <div className="flex items-center justify-center gap-0 mb-2">
           <div className="">
@@ -88,7 +113,7 @@ export default function LoginPage() {
               required
               autoFocus
             />
-            <div className="relative ">
+            <div className="relative">
               <Input
                 label="Password"
                 type={showPassword ? "text" : "password"}
@@ -137,6 +162,17 @@ export default function LoginPage() {
             </Button>
           </form>
         </div>
+
+        {/* Signup link */}
+        <p className="text-center text-xs text-gray-400 mt-4">
+          Don't have an account?{" "}
+          <Link
+            href="/signup"
+            className="text-blue-500 hover:text-blue-400 transition-colors"
+          >
+            Sign up
+          </Link>
+        </p>
 
         <p className="text-center text-xs text-gray-600 mt-6">
           Boaflow Lead Discovery Platform

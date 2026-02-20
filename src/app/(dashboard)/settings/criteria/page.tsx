@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { settingsApi } from "@/lib/api";
 import { FitCriteria } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { CriteriaSkeleton } from "@/components/skeletons/CriteriaSkeleton";
 import { ClipboardPlus, Plus, Trash2 } from "lucide-react";
 import { clsx } from "clsx";
 import { toast } from "sonner";
@@ -104,11 +104,7 @@ export default function CriteriaPage() {
       </div>
 
       {isLoading ? (
-        <div className="space-y-4">
-          {Array.from({ length: 2 }).map((_, i) => (
-            <Skeleton key={i} className="h-32 w-full rounded-xl" />
-          ))}
-        </div>
+        <CriteriaSkeleton />
       ) : (
         <div className="space-y-5">
           {grouped.map((group) => (

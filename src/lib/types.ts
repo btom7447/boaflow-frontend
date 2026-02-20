@@ -1,19 +1,28 @@
 // ─── Auth ────────────────────────────────────────────────
 
+import { PlanKey } from "./plans";
+
+export type Role = "admin" | "sales" | "client" 
+
 export interface User {
   id: number;
   email: string;
   role: "admin" | "sales" | "client";
   full_name: string | null;
-  avatar: string | null; // base64 encoded image
+  avatar: string | null; 
+  organization_id: number; 
+  organization?: Organization; 
   token?: string;
 }
 
 export interface TokenResponse {
   access_token: string;
   token_type: string;
-  role: string;
+  role: Role;
   full_name: string | null;
+  avatar?: string;
+  id: number;
+  organization_id: number;
 }
 
 // ─── Leads ───────────────────────────────────────────────
@@ -134,4 +143,83 @@ export interface AppUser {
 
 export interface ApiError {
   detail: string;
+}
+
+// ─── Search Configurations ──────────────────────────────────────────
+
+export interface SearchConfiguration {
+  id: number;
+  organization_id: number;
+  name: string;
+  description: string | null;
+  criteria_prompt: string;
+  check_website: boolean;
+  check_google_reviews: boolean;
+  check_social_media: boolean;
+  check_jobs_page: boolean;
+  use_email_finder: boolean;
+  use_clearbit: boolean;
+  is_active: boolean;
+  created_by: number | null;
+  created_at: string;
+  updated_at: string | null;
+}
+
+export interface SearchConfigurationCreate {
+  name: string;
+  description?: string;
+  criteria_prompt: string;
+  check_website?: boolean;
+  check_google_reviews?: boolean;
+  check_social_media?: boolean;
+  check_jobs_page?: boolean;
+  use_email_finder?: boolean;
+  use_clearbit?: boolean;
+}
+
+export interface SearchConfigurationUpdate {
+  name?: string;
+  description?: string;
+  criteria_prompt?: string;
+  check_website?: boolean;
+  check_google_reviews?: boolean;
+  check_social_media?: boolean;
+  check_jobs_page?: boolean;
+  use_email_finder?: boolean;
+  use_clearbit?: boolean;
+  is_active?: boolean;
+}
+
+// ─── Organization ───────────────────────────────────────────────────
+
+export interface Organization {
+  id: number;
+  name: string;
+  slug: string;
+  plan: PlanKey;
+  monthly_search_limit: number;
+  monthly_searches_used: number;
+  billing_email: string | null;
+  is_active: boolean;
+  created_at: string;
+  trial_ends_at: string | null;
+}
+
+export interface OrganizationStats {
+  searches_remaining: number;
+  searches_used: number;
+  searches_limit: number;
+  usage_percentage: number;
+  total_leads: number;
+  total_configurations: number;
+  team_members: number;
+}
+
+// ─── UI ───────────────────────────────────────────────────
+export interface PipelineTableRun {
+  id: number;
+  status: string;
+  leads_found: number;
+  leads_match: number;
+  created_at: string;
 }

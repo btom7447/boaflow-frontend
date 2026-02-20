@@ -28,7 +28,8 @@ export default function DashboardLayout({
 
   useEffect(() => {
     if (hydrated && !isAuthenticated) {
-      router.push("/login");
+      const token = localStorage.getItem("boaflow_token");
+      if (!token) router.push("/login");
     }
   }, [hydrated, isAuthenticated, router]);
 

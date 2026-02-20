@@ -8,7 +8,7 @@ import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { UsersSkeleton } from "@/components/skeletons/UserSkeleton";
 import {
   Plus,
   Trash2,
@@ -129,11 +129,7 @@ export default function UsersPage() {
       </div>
 
       {isLoading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-14 w-full rounded-xl" />
-          ))}
-        </div>
+        <UsersSkeleton />
       ) : (
         <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
           <table className="w-full text-sm">

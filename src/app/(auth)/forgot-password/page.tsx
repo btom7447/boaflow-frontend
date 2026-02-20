@@ -4,7 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { Zap, ArrowLeft, CheckCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, ChevronLeft } from "lucide-react";
+import Image from "next/image";
 
 type State = "idle" | "loading" | "sent";
 
@@ -15,9 +16,6 @@ export default function ForgotPasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setState("loading");
-
-    // Placeholder — backend reset email endpoint wired in later
-    // Always shows success to avoid exposing whether email exists
     await new Promise((r) => setTimeout(r, 900));
     setState("sent");
   };
@@ -28,13 +26,19 @@ export default function ForgotPasswordPage() {
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
       </div>
 
-      <div className="w-full max-w-md relative">
+      <div className="w-full max-w-xl relative">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2.5 mb-8">
-          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg">
-            <Zap size={18} className="text-white" />
+        <div className="flex items-center justify-center gap-0 mb-2">
+          <div className="">
+            <Image
+              src={"/favicon.png"}
+              alt="Boaflow Logo"
+              width={100}
+              height={100}
+              objectFit="cover"
+            />
           </div>
-          <span className="text-xl font-semibold text-white tracking-tight">
+          <span className="text-4xl font-semibold text-white tracking-tight">
             Boaflow
           </span>
         </div>
@@ -42,7 +46,6 @@ export default function ForgotPasswordPage() {
         {/* Card */}
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl">
           {state === "sent" ? (
-            /* ── Success state ── */
             <div className="text-center py-4">
               <div className="flex justify-center mb-4">
                 <div className="w-12 h-12 rounded-full bg-blue-600/15 flex items-center justify-center">
@@ -60,19 +63,18 @@ export default function ForgotPasswordPage() {
                 href="/login"
                 className="text-sm text-blue-500 hover:text-blue-400 transition-colors flex items-center justify-center gap-1.5"
               >
-                <ArrowLeft size={14} />
+                <ChevronLeft size={14} />
                 Back to sign in
               </Link>
             </div>
           ) : (
-            /* ── Form state ── */
             <>
               <div className="mb-6">
                 <Link
                   href="/login"
                   className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-300 transition-colors mb-5"
                 >
-                  <ArrowLeft size={13} />
+                  <ChevronLeft size={13} />
                   Back to sign in
                 </Link>
                 <h1 className="text-lg font-semibold text-white">

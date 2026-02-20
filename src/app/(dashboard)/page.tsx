@@ -1,7 +1,8 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { dashboardApi } from "@/lib/api";
+import { dashboardApi, organizationApi } from "@/lib/api";
+import { useAuthStore } from "@/store/authStore";
 import {
   LineChart,
   Line,
@@ -13,20 +14,44 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { TrendingUp, Target, Award, Zap, Crosshair } from "lucide-react";
+import {
+  TrendingUp,
+  Award,
+  Zap,
+  Crosshair,
+  Building2,
+  Users,
+  Search,
+  TrendingDown,
+} from "lucide-react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { RUN_STATUS_COLORS } from "@/lib/constants";
-import Link from "next/link";
+
+import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
+import { StatCard } from "@/components/ui/Statcard";
+import { StatItem } from "@/components/ui/StatItem";
+import { ChartCard } from "@/components/ui/ChartCard";
+import { PipelineTable } from "@/components/ui/PipelineTable";
 
 export default function DashboardPage() {
-  const { data: stats, isLoading } = useQuery({
+  const { user, organization } = useAuthStore();
+  const isAdmin = user?.role === "admin";
+
+  const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["dashboard-stats"],
     queryFn: dashboardApi.getStats,
   });
 
-  if (isLoading) {
-    return <DashboardSkeleton />;
-  }
+  const { data: orgStats, isLoading: orgStatsLoading } = useQuery({
+    queryKey: ["organization-stats"],
+    queryFn: organizationApi.getStats,
+    enabled: isAdmin,
+  });
+
+  const isLoading = statsLoading || (isAdmin && orgStatsLoading);
+
+  if (isLoading) return <DashboardSkeleton />;
 
   if (!stats) {
     return (
@@ -37,29 +62,89 @@ export default function DashboardPage() {
   }
 
   const fitData = [
-    { name: "Yes", value: stats.leads_yes, color: "#10b981" },
-    { name: "Maybe", value: stats.leads_maybe, color: "#f59e0b" },
-    { name: "No", value: stats.leads_no, color: "#ef4444" },
+    { name: "Match", value: stats.leads_match, color: "#10b981" },
+    { name: "No Match", value: stats.leads_no_match, color: "#ef4444" },
   ];
 
   return (
     <div className="p-6 space-y-6">
-      {/* Stats Cards */}
+      {/* Welcome */}
+      <div>
+        <h1 className="text-2xl font-semibold text-white mb-1">
+          Welcome back,{" "}
+          <span className="text-blue-400">{user?.full_name || user?.email?.split("@")[0]}</span>
+        </h1>
+        <p className="text-sm text-gray-400">
+          Here's what's happening with your leads today
+        </p>
+      </div>
+      {/* Organization Stats */}
+      {isAdmin && orgStats && organization && (
+        <Link href="/organization">
+          <div className="bg-linear-to-br from-blue-600/10 to-purple-600/10 border border-blue-600/30 rounded-xl p-6 hover:border-blue-600/50 transition-all cursor-pointer group mb-5">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Building2 size={18} className="text-blue-400" />
+                  <h2 className="text-sm font-medium text-blue-400">
+                    {organization.name} • {capitalize(organization.plan)} Plan
+                  </h2>
+                </div>
+                <p className="text-xs text-gray-400">
+                  Click to manage organization settings
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-gray-500 mb-1">Monthly Usage</p>
+                <p className="text-2xl font-semibold text-white">
+                  {orgStats.usage_percentage.toFixed(0)}%
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <StatItem
+                icon={Search}
+                label="Searches"
+                value={`${orgStats.searches_used} / ${orgStats.searches_limit}`}
+              />
+              <StatItem
+                icon={Crosshair}
+                label="Total Leads"
+                value={(orgStats.total_leads ?? 0).toLocaleString()}
+              />
+              <StatItem
+                icon={Users}
+                label="Team"
+                value={`${orgStats.team_members} members`}
+              />
+            </div>
+
+            {orgStats.usage_percentage >= 80 && (
+              <div className="mt-4 flex items-center gap-2 text-xs text-yellow-400 bg-yellow-950/30 border border-yellow-900/50 rounded-lg px-3 py-2">
+                <TrendingDown size={14} />
+                You're approaching your monthly limit. Consider upgrading.
+              </div>
+            )}
+          </div>
+        </Link>
+      )}
+      {/* Lead Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           icon={Crosshair}
           label="Total Leads"
-          value={stats.total_leads.toLocaleString()}
+          value={(stats.total_leads ?? 0).toLocaleString()}
           trend="+12% from last month"
           trendUp
         />
         <StatCard
           icon={TrendingUp}
           label="High Fit Leads"
-          value={stats.leads_yes.toLocaleString()}
+          value={(stats.leads_match ?? 0).toLocaleString()}
           trend={
             stats.total_leads > 0
-              ? `${((stats.leads_yes / stats.total_leads) * 100).toFixed(1)}% of total`
+              ? `${((stats.leads_match / stats.total_leads) * 100).toFixed(1)}% of total`
               : "0% of total"
           }
         />
@@ -76,14 +161,9 @@ export default function DashboardPage() {
           trend="Across all leads"
         />
       </div>
-
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Leads Over Time */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-          <h2 className="text-sm font-medium text-gray-300 mb-4">
-            Leads Over Time
-          </h2>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <ChartCard title="Leads Over Time">
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={stats.leads_over_time}>
               <XAxis
@@ -115,13 +195,9 @@ export default function DashboardPage() {
               />
             </LineChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
 
-        {/* Fit Distribution */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-          <h2 className="text-sm font-medium text-gray-300 mb-4">
-            Fit Distribution
-          </h2>
+        <ChartCard title="Match Distribution">
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
@@ -142,7 +218,7 @@ export default function DashboardPage() {
                   backgroundColor: "#1f2937",
                   border: "1px solid #374151",
                   borderRadius: "8px",
-                  color: "#f9fafb",
+                  color: "#fff",
                 }}
               />
             </PieChart>
@@ -160,163 +236,15 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
-        </div>
+        </ChartCard>
       </div>
-
       {/* Recent Pipeline Runs */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
-          <h2 className="text-sm font-medium text-gray-300">
-            Recent Pipeline Runs
-          </h2>
-          <Link
-            href="/pipeline"
-            className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
-          >
-            View all →
-          </Link>
-        </div>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-gray-800">
-              {["Run", "Status", "Jobs Found", "Leads", "Date"].map((h) => (
-                <th
-                  key={h}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-800">
-            {stats.recent_runs.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={5}
-                  className="px-6 py-8 text-center text-gray-500 text-sm"
-                >
-                  No pipeline runs yet
-                </td>
-              </tr>
-            ) : (
-              stats.recent_runs.map((run) => (
-                <tr
-                  key={run.id}
-                  className="hover:bg-gray-800/50 transition-colors"
-                >
-                  <td className="px-6 py-3 font-medium text-gray-200">
-                    Run #{run.id}
-                  </td>
-                  <td className="px-6 py-3">
-                    <Badge
-                      label={
-                        run.status.charAt(0).toUpperCase() + run.status.slice(1)
-                      }
-                      colorClass={
-                        RUN_STATUS_COLORS[run.status] ||
-                        "bg-gray-800 text-gray-400"
-                      }
-                    />
-                  </td>
-                  <td className="px-6 py-3 text-gray-400">{run.jobs_found}</td>
-                  <td className="px-6 py-3">
-                    <span className="text-blue-400">{run.leads_yes} yes</span>
-                  </td>
-                  <td className="px-6 py-3 text-gray-500 text-xs">
-                    {new Date(run.created_at).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <PipelineTable runs={stats.recent_runs} limit={5} filterToday />
     </div>
   );
 }
 
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  trend,
-  trendUp,
-}: {
-  icon: any;
-  label: string;
-  value: string;
-  trend?: string;
-  trendUp?: boolean;
-}) {
-  return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-      <div className="flex items-center justify-between mb-3">
-        <div className="w-10 h-10 rounded-lg bg-blue-600/10 flex items-center justify-center">
-          <Icon size={18} className="text-blue-400" />
-        </div>
-      </div>
-      <p className="text-2xl font-semibold text-white mb-1">{value}</p>
-      <p className="text-xs text-gray-500">{label}</p>
-      {trend && (
-        <p
-          className={`text-xs mt-2 ${
-            trendUp ? "text-blue-400" : "text-gray-600"
-          }`}
-        >
-          {trend}
-        </p>
-      )}
-    </div>
-  );
-}
-
-function DashboardSkeleton() {
-  return (
-    <div className="p-6 space-y-6">
-      <div>
-        <div className="h-7 w-32 bg-gray-800 rounded animate-pulse" />
-        <div className="h-4 w-48 bg-gray-800 rounded animate-pulse mt-2" />
-      </div>
-
-      {/* Stats Cards Skeleton */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div
-            key={i}
-            className="bg-gray-900 border border-gray-800 rounded-xl p-5"
-          >
-            <div className="w-10 h-10 rounded-lg bg-gray-800 animate-pulse mb-3" />
-            <div className="h-8 w-20 bg-gray-800 rounded animate-pulse mb-2" />
-            <div className="h-3 w-24 bg-gray-800 rounded animate-pulse" />
-          </div>
-        ))}
-      </div>
-
-      {/* Charts Skeleton */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {Array.from({ length: 2 }).map((_, i) => (
-          <div
-            key={i}
-            className="bg-gray-900 border border-gray-800 rounded-xl p-6"
-          >
-            <div className="h-4 w-32 bg-gray-800 rounded animate-pulse mb-4" />
-            <div className="h-48 bg-gray-800 rounded animate-pulse" />
-          </div>
-        ))}
-      </div>
-
-      {/* Table Skeleton */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-800">
-          <div className="h-4 w-40 bg-gray-800 rounded animate-pulse" />
-        </div>
-        <div className="p-6 space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-12 bg-gray-800 rounded animate-pulse" />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+// Utility function
+function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }

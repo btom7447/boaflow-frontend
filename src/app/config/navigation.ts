@@ -1,15 +1,13 @@
 import {
   LayoutDashboard,
   Play,
-  Shield,
-  Users,
-  CheckSquare,
-  User,
-  Cog,
-  UserCog,
-  ClipboardCheck,
-  Target,
   Crosshair,
+  Search,
+  Building2,
+  User,
+  Users,
+  Sparkles,
+  Gauge,
 } from "lucide-react";
 
 export type AppRole = "admin" | "sales" | "client";
@@ -36,38 +34,44 @@ export const NAVIGATION: NavItem[] = [
     roles: ["admin", "sales", "client"],
   },
   {
+    href: "/configurations",
+    label: "My Searches",
+    icon: Search,
+    roles: ["admin", "sales", "client"],
+  },
+  {
     href: "/pipeline",
     label: "Pipeline",
     icon: Play,
     roles: ["admin"],
   },
   {
+    href: "/organization",
+    label: "Organization",
+    icon: Building2,
+    roles: ["admin"],
+    children: [
+      {
+        href: "/organization/overview",
+        label: "Overview",
+        icon: Gauge,
+      },
+      {
+        href: "/organization/team",
+        label: "Team",
+        icon: Users,
+      },
+      {
+        href: "/organization/plans",
+        label: "Upgrade Plan",
+        icon: Sparkles,
+      },
+    ],
+  },
+  {
     href: "/profile",
     label: "Profile",
     icon: User,
     roles: ["admin", "sales", "client"],
-  },
-  {
-    href: "/settings",
-    label: "Configure",
-    icon: Cog,
-    roles: ["admin"],
-    children: [
-      {
-        href: "/settings/roles",
-        label: "Role Config",
-        icon: UserCog,
-      },
-      {
-        href: "/settings/criteria",
-        label: "Fit Criteria",
-        icon: ClipboardCheck,
-      },
-      {
-        href: "/settings/users",
-        label: "Users",
-        icon: Users,
-      },
-    ],
   },
 ];

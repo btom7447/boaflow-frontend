@@ -6,7 +6,7 @@ import { settingsApi } from "@/lib/api";
 import { RoleConfig } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { RolesSkeleton } from "@/components/skeletons/RoleSkeleton";
 import { Plus, Pencil, Trash2, X, Search } from "lucide-react";
 import { toast } from "sonner";
 
@@ -157,11 +157,7 @@ export default function RolesPage() {
       </div>
 
       {isLoading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full rounded-xl" />
-          ))}
-        </div>
+        <RolesSkeleton />
       ) : (
         <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
           <table className="w-full text-sm">

@@ -11,11 +11,16 @@ import {
   FitCriteria,
   AppUser,
   LeadStatus,
+  SearchConfiguration,
+  SearchConfigurationCreate,
+  SearchConfigurationUpdate,
+  OrganizationStats,
+  Organization,
 } from "./types";
 
 // ─── Client Setup ─────────────────────────────────────────
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 const client: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -253,24 +258,65 @@ export const settingsApi = {
 
 export const dashboardApi = {
   getStats: async (): Promise<{
-    total_leads: number
-    leads_yes: number
-    leads_maybe: number
-    leads_no: number
-    avg_confidence: number
-    conversion_rate: number
-    leads_over_time: { date: string; count: number }[]
+    total_leads: number;
+    leads_match: number;
+    leads_no_match: number; 
+    avg_confidence: number;
+    conversion_rate: number;
+    leads_over_time: { date: string; count: number }[];
     recent_runs: Array<{
-      id: number
-      status: string
-      jobs_found: number
-      leads_yes: number
-      created_at: string
-    }>
+      id: number;
+      status: string;
+      leads_found: number;
+      leads_match: number;
+      created_at: string;
+    }>;
   }> => {
-    const { data } = await client.get("/api/dashboard/stats")
-    return data
+    const { data } = await client.get("/api/dashboard/stats");
+    return data;
   },
-}
+};
+
+// ─── Configurations ─────────────────────────────────────────────────
+
+export const configurationsApi = {
+  getAll: async (): Promise<SearchConfiguration[]> => {
+    const { data } = await client.get<SearchConfiguration[]>("/api/configurations/");
+    return data;
+  },
+
+  getById: async (id: number): Promise<SearchConfiguration> => {
+    const { data } = await client.get<SearchConfiguration>(`/api/configurations/${id}`);
+    return data;
+  },
+
+  create: async (payload: SearchConfigurationCreate): Promise<SearchConfiguration> => {
+    const { data } = await client.post<SearchConfiguration>("/api/configurations/", payload);
+    return data;
+  },
+
+  update: async (id: number, payload: SearchConfigurationUpdate): Promise<SearchConfiguration> => {
+    const { data } = await client.patch<SearchConfiguration>(`/api/configurations/${id}`, payload);
+    return data;
+  },
+
+  delete: async (id: number): Promise<void> => {
+    await client.delete(`/api/configurations/${id}`);
+  },
+};
+
+// ─── Organization ───────────────────────────────────────────────────
+
+export const organizationApi = {
+  getStats: async (): Promise<OrganizationStats> => {
+    const { data } = await client.get<OrganizationStats>("/api/organization/stats");
+    return data;
+  },
+
+  getOrganization: async (): Promise<Organization> => {
+    const { data } = await client.get<Organization>("/api/organization/");
+    return data;
+  },
+};
 
 export default client;
