@@ -136,6 +136,7 @@ export interface AppUser {
   email: string;
   full_name?: string;
   role: "admin" | "sales" | "client";
+  avatar?: string | null;
   is_active: boolean;
 }
 

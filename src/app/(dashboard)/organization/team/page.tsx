@@ -34,6 +34,37 @@ const ROLE_COLORS: Record<string, string> = {
   client: "bg-gray-800 text-gray-400",
 };
 
+function Avatar({
+  name,
+  avatarBase64,
+}: {
+  name: string;
+  avatarBase64?: string | null;
+}) {
+  const initials =
+    name
+      .trim()
+      .split(" ")
+      .map((p) => p[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "U";
+
+  return (
+    <div className="w-8 h-8 rounded-full bg-blue-600/20 border border-blue-600/30 flex items-center justify-center shrink-0 overflow-hidden">
+      {avatarBase64 ? (
+        <img
+          src={`data:image/png;base64,${avatarBase64}`}
+          alt="Avatar"
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <span className="text-xs font-semibold text-blue-400">{initials}</span>
+      )}
+    </div>
+  );
+}
+
 export default function UsersPage() {
   const queryClient = useQueryClient();
   const { user: currentUser } = useAuthStore();
@@ -170,17 +201,10 @@ export default function UsersPage() {
                     >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-7 h-7 rounded-full bg-blue-600/20 border border-blue-600/20 flex items-center justify-center shrink-0">
-                            <span className="text-xs font-semibold text-blue-400">
-                              {(u.full_name || u.email)
-                                .trim()
-                                .split(" ")
-                                .map((p) => p[0])
-                                .slice(0, 2)
-                                .join("")
-                                .toUpperCase()}
-                            </span>
-                          </div>
+                          <Avatar
+                            name={u.full_name || u.email}
+                            avatarBase64={u.avatar}
+                          />
                           <div>
                             <p className="font-medium text-gray-200">
                               {u.full_name || "—"}

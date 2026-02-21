@@ -17,6 +17,7 @@ import {
   OrganizationStats,
   Organization,
 } from "./types";
+import { PlanKey } from "./plans";
 
 // ─── Client Setup ─────────────────────────────────────────
 
@@ -62,6 +63,25 @@ export const authApi = {
       password,
     });
     return data;
+  },
+
+  signup: async (payload: {
+    user: { full_name: string; email: string; password: string };
+    organization: { name: string; slug: string };
+    plan: PlanKey;
+  }): Promise<TokenResponse> => {
+    const { data } = await client.post<TokenResponse>(
+      "/api/auth/signup",
+      payload, 
+    );
+    return data;
+  },
+
+  checkSlug: async (slug: string) => {
+    const res = await client.get("/api/auth/check-slug", {
+      params: { slug },
+    });
+    return res.data;
   },
 
   me: async (token?: string): Promise<User> => {

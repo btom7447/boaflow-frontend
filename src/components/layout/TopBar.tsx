@@ -25,7 +25,7 @@ type TopBarProps = {
 const PAGE_TITLES: Record<string, string> = {
   "/leads": "Leads",
   "/pipeline": "Pipeline",
-  "/organization": "Organization",
+  "/organization/overview": "Organization",
   "/organization/team": "Team",
   "/organization/plans": "Upgrade Plan",
   "/profile": "Profile Settings",
